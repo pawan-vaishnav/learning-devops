@@ -1,0 +1,21 @@
+services:
+
+  # App service
+  app:
+
+    # Current folder ke Dockerfile se image build karo
+    build: .
+
+    # Container ka naam
+    container_name: backend-learning
+
+    # Host Port : Container Port
+    ports:
+      - "5000:5000"
+
+    # Environment file load karo
+    env_file:
+      - .env
+
+    # Container crash ho to automatically restart ho
+    restart: unless-stopped 
