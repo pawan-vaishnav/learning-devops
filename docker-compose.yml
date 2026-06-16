@@ -1,21 +1,37 @@
 services:
-
   # App service
   app:
-
     # Current folder ke Dockerfile se image build karo
     build: .
-
-    # Container ka naam
-    container_name: backend-learning
-
-    # Host Port : Container Port
+    # Real-world check: REMOVED container_name to allow scalability down the line.
     ports:
       - "5000:5000"
-
     # Environment file load karo
     env_file:
       - .env
-
     # Container crash ho to automatically restart ho
-    restart: unless-stopped 
+    restart: unless-stopped
+    # Database container start hone ka wait karega
+    depends_on:
+      - mongo
+
+  # MongoDB Service
+  mongo:
+    image: mongo:7.0
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    env_file:
+      - .env
+    environment:
+      # Inject credentials securely from the .env file
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      # CRITICAL: Maps a named volume to the container's internal data directory 
+      # so your database collections survive container restarts.
+      - mongo-data:/data/db
+
+# Define the named volume
+volumes:
+  mongo-data:
